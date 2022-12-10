@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: -10
   m_Sprite: {fileID: 613658156, guid: 1bc6097228993f045852159e71f81d5b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -101,9 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   power: 1
-  lifeMax: 100
-  lifeCurrent: 0
+  healthMax: 100
+  health: 0
   prefabExp: {fileID: 2265010744183164196, guid: a33c7b801822b8e47a67ee526dce442d, type: 3}
+  prefabDamageText: {fileID: 78977305188076101, guid: 0dde53610e92f8b4688e786590c0c634, type: 3}
 --- !u!136 &5718310417879136926
 CapsuleCollider:
   m_ObjectHideFlags: 0

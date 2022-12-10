@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyBehavior : MonoBehaviour
 {
@@ -12,17 +13,19 @@ public class EnemyBehavior : MonoBehaviour
     // power of enemy(damage to player)
     public int power = 1;
     // max. life
-    public int lifeMax = 100;
+    public int healthMax = 100;
     // current life
-    public int lifeCurrent;
-    // exp
+    public int health;
+    // prefab of exp.
     public GameObject prefabExp;
+    // prefab of damage text
+    public GameObject prefabDamageText;
 
     // Start is called before the first frame update
     void Start()
     {
         player = FindObjectOfType<PlayerBehavior>();
-        lifeCurrent = lifeMax;
+        health = healthMax;
     }
 
     // Update is called once per frame
@@ -49,8 +52,14 @@ public class EnemyBehavior : MonoBehaviour
     public void Damaged(int damage)
     {
         // reduce life
-        lifeCurrent -= damage;
-        if (lifeCurrent <= 0f)
+        health -= damage;
+        // text damage
+        RectTransform damageText = Instantiate(prefabDamageText, transform.position, transform.rotation, GameObject.Find("Canvas").transform).GetComponent<RectTransform>();
+        Vector3 _pos = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y, 0));
+        damageText.transform.position = _pos;
+        damageText.gameObject.transform.GetComponent<Text>().text = "" + damage;
+        // check die
+        if (health <= 0f)
         {
             // die
             Die();
@@ -62,8 +71,22 @@ public class EnemyBehavior : MonoBehaviour
         // instantiate exp
         GameObject goEXp = Instantiate(prefabExp, transform.position, transform.rotation);
         ExpMarble exp = goEXp.GetComponent<ExpMarble>();
-        exp.expPoint = power * lifeMax / 100;
+        // calculate exp. point
+        exp.expPoint = power * healthMax / 100;
+        // increase count of killed enemies
+        GameManager.instance.IncreaseKilledEnemies();
+
         // destroy enemy
         Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            // 플레이어와 충돌시 멀리 팅겨나가지 않도록
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+            rigidbody.velocity = Vector3.zero;
+        }
     }
 }

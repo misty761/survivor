@@ -101,9 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   power: 1
-  lifeMax: 200
-  lifeCurrent: 0
+  healthMax: 200
+  health: 0
   prefabExp: {fileID: 2265010744183164196, guid: a33c7b801822b8e47a67ee526dce442d, type: 3}
+  prefabDamageText: {fileID: 78977305188076101, guid: 0dde53610e92f8b4688e786590c0c634, type: 3}
 --- !u!136 &5718310417879136926
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -55,7 +55,7 @@ public class SpawnEnemy : MonoBehaviour
         // reset spawn time
         spawnTime = 0f;
         // reduce spawnTimeMax
-        spawnTimeMax = spawnTimeMax * 0.95f;
+        spawnTimeMax = Mathf.Lerp(spawnTimeMin, spawnTimeMax, 0.99f);
         if (spawnTimeMax <= spawnTimeMin)
         {
             spawnTimeMax = spawnTimeMin;

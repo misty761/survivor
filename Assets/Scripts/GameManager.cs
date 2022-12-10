@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +17,15 @@ public class GameManager : MonoBehaviour
     PlayerBehavior player;
     // lists of enemies
     public List<EnemyBehavior> enemies;
+    // time
+    float time;
+    // time UI
+    public Text timeText;
+    // count of killed enemies
+    public int killedEnemiesCount;
+    // count of killed enemies UI
+    public Text killedEnemiesText;
+
 
     private void Awake()
     {
@@ -31,13 +42,63 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // find player
         player = FindObjectOfType<PlayerBehavior>();
+        // reset elapsed time
+        time = 0f;
+        // reset count of killed enemies
+        killedEnemiesCount = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        // update elapsed time
+        ElapsedTime();
+    }
+
+    public void IncreaseKilledEnemies()
+    {
+        // increase count
+        killedEnemiesCount++;
+        // update UI
+        killedEnemiesText.text = killedEnemiesCount.ToString();
+    }
+
+    void ElapsedTime()
+    {
+        // calculate elapsed time
+        time += Time.deltaTime;
+        // calculate minute
+        int minute = (int)Math.Truncate(time / 60);
+        // calculate second
+        int second = (int)time % 60;
+        // minute:second
+        string stringTime;
+        if (minute < 10)
+        {
+            if (second < 10)
+            {
+                stringTime = "0" + minute + ":" + "0" + second;
+            }
+            else
+            {
+                stringTime = "0" + minute + ":" + second;
+            }
+        }
+        else
+        {
+            if (second < 10)
+            {
+                stringTime = minute + ":" + "0" + second;
+            }
+            else
+            {
+                stringTime = minute + ":" + second;
+            }
+        }
+        // update time UI
+        timeText.text = stringTime;
     }
 
     public void FindCloseEnemy()

@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerBehavior : MonoBehaviour
 {
     // move speed
     public float speed = 1f;
     // max. life
-    public int lifeMax = 100;
+    public int healthMax = 100;
     // current life
-    int lifeCurrent;
+    int health;
     // fire interval
     public float fireInterval = 1f;
     // time after firing
@@ -19,26 +20,45 @@ public class PlayerBehavior : MonoBehaviour
     // bullet prefab
     public GameObject bullet;
     // exp. current
-    int expCurrent;
+    int exp;
     // exp. next
     int expNext;
     // player level
     int level;
+    // hp bar
+    public Image hpBar;
+    // exp bar
+    public Image expBar;
+    // text level
+    public Text textLevel;
+    // joystick
+    Joystick joystick;
 
     // Start is called before the first frame update
     void Start()
     {
-        lifeCurrent = lifeMax;
+        health = healthMax;
+        hpBar.fillAmount = (float)health / (float)healthMax;
         fireTime = fireInterval;
-        expCurrent= 0;
+        exp= 0;
         expNext = 10;
+        expBar.fillAmount = (float)exp / (float)expNext;
         level = 1;
+        textLevel.text = "lv." + level;
+        joystick = FindObjectOfType<Joystick>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        #region move
+        Move();
+
+        Attack();
+    }
+
+    private void Move()
+    {
+        #region keyboard
         if (Input.GetKey(KeyCode.A))
         {
             if (Input.GetKey(KeyCode.D))
@@ -94,7 +114,34 @@ public class PlayerBehavior : MonoBehaviour
         }
         #endregion
 
-        #region attack
+        #region joystick
+        // joystick
+        float h = joystick.Horizontal;
+        float v = joystick.Vertical;
+        float joystickMin = 0.1f;
+        // sprite
+        if (h > 0f)
+        {
+            transform.localScale = new Vector3(1, 1);
+        }
+        else if (h < 0f)
+        {
+            transform.localScale = new Vector3(-1, 1);
+        }
+        // move
+        if (h > joystickMin || h <-joystickMin)
+        {
+            transform.Translate(Vector3.right * Time.deltaTime * speed * h);
+        }
+        if (v > joystickMin || v <-joystickMin) 
+        {
+            transform.Translate(Vector3.up * Time.deltaTime * speed * v);
+        }
+        #endregion
+    }
+
+    void Attack()
+    {
         // calculate time after firing
         fireTime += Time.deltaTime;
         // fire after fire interval
@@ -117,10 +164,9 @@ public class PlayerBehavior : MonoBehaviour
                     fireTime = 0f;
                     // fire
                     Instantiate(bullet, transform.position, transform.rotation);
-                } 
-            }       
+                }
+            }
         }
-        #endregion
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -134,6 +180,7 @@ public class PlayerBehavior : MonoBehaviour
             EnemyBehavior enemy = collision.gameObject.GetComponent<EnemyBehavior>();
             // player is damaged
             Damaged(enemy.power);
+            print("player is damaged!");
         }
         // collision to Exp
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Exp"))
@@ -149,9 +196,10 @@ public class PlayerBehavior : MonoBehaviour
     void Damaged(int damage)
     {
         // lost life
-        lifeCurrent -= damage;
-        print(lifeCurrent);
-        if (lifeCurrent <= 0f)
+        health -= damage;
+        hpBar.fillAmount = (float)health / (float)healthMax;
+        //print("Hp : " + health);
+        if (health <= 0)
         {
             // player die
             Die();
@@ -166,20 +214,23 @@ public class PlayerBehavior : MonoBehaviour
     void IncreaseExp(int point)
     {
         // get exp
-        expCurrent += point;
+        exp += point;
+        // update exp. bar
+        expBar.fillAmount = (float)exp / (float)expNext;
         //print(expCurrent);
         // check level up
-        if (expCurrent > expNext)
+        if (exp >= expNext)
         {
             // increase exp. thereshold for the next level
             expNext = expNext * 2;
             // reset current exp.
-            expCurrent = 0;
+            exp = 0;
+            // update exp. bar
+            expBar.fillAmount = (float)exp / (float)expNext;
             // level up
             level++;
-            print(expNext);
-            print(level);
+            // update level UI
+            textLevel.text = "lv." + level;
         }
-
     }
 }

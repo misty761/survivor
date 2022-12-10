@@ -57,6 +57,8 @@ public class CameraManager : MonoBehaviour
     {
         if (target.gameObject != null)
         {
+            SetBound(bound);
+
             targetPosition.Set(target.transform.position.x, target.transform.position.y, transform.position.z);
 
             transform.position = Vector3.Lerp(transform.position, targetPosition, moveSpeed * Time.deltaTime);
@@ -64,7 +66,7 @@ public class CameraManager : MonoBehaviour
             float clampedX = Mathf.Clamp(transform.position.x, minBound.x + halfWidth, maxBound.x - halfWidth);
             float clampedY = Mathf.Clamp(transform.position.y, minBound.y + halfHeight, maxBound.y - halfHeight);
 
-            transform.position = new Vector3(clampedX, clampedY, transform.position.z);
+            transform.position = new Vector3(clampedX, clampedY, transform.position.z);   
         }
     }
 
